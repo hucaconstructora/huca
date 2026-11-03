@@ -1,0 +1,16 @@
+{
+  "name": "HUCA Building Solutions",
+  "short_name": "HUCA",
+  "description": "Obra civil y reformas integrales en Barcelona",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e2023",
+  "theme_color": "#1e2023",
+  "icons": [
+    {
+      "src": "/_astro/logo-huca.D2tQ_sH5.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

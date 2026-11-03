@@ -1,6 +1,17 @@
 ---
 title: Renovación Total de Vivienda – Sant Climent
 slug: renovacion-total-vivienda-sant-climent
+status: published
+featured: false
+order: 1
+projectType: Reforma
+year: 2025
+client: Privado
+sector: Residencial
+subSector: Renovación integral
+location: Sant Climent, Cataluña
+region: Cataluña
+city: Sant Climent
 summary: Nuestro diverso portafolio representa una pasión por la calidad, un
   servicio excepcional al cliente y un compromiso constante de acompañamiento en
   cada proyecto.
@@ -44,17 +55,6 @@ gallery:
   - src: ../../assets/projects/renovacion-sant-climent-04.png
     alt: Habitación renovada con suelo de madera y puerta acristalada con vistas al
       exterior.
-location: Sant Climent, Cataluña
-region: Cataluña
-city: Sant Climent
-projectType: Reforma
-year: 2025
-client: Privado
-sector: Residencial
-subSector: Renovación integral
-status: published
-featured: true
-order: 1
 seoTitle: Renovación de vivienda en Sant Climent | HUCA
 seoDescription: "Reforma integral de vivienda unifamiliar en Sant Climent:
   redistribución interior, mejora del aislamiento y renovación de

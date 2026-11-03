@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { aboutContent } from '../../data/company';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<MainLayout
+  title="Servicios de HUCA | Obra nueva, reformas y obra civil"
+  description={aboutContent.introduction}
+  ogImage={services[0]?.data.cover}
+>
+  {services[0] && (
+    <PageHero
+      eyebrow="Servicios"
+      title="Construcción, reforma y obra civil"
+      description={aboutContent.introduction}
+      image={services[0].data.cover}
+      imageAlt={services[0].data.coverAlt}
+      breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Servicios' }]}
+    />
+  )}
+
+  <section class="services-index section-pad">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Áreas de trabajo"
+        title="Servicios para cada tipo de proyecto"
+        description="Abarcamos todo el proceso de obra nueva, reforma, rehabilitación y obra civil, adaptándonos a las necesidades de cada proyecto."
+        align="center"
+      />
+      <div class="services-index__grid">
+        {services.map((service) => <ServiceCard service={service} />)}
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .services-index__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 46px;
+  }
+
+  @media (max-width: 900px) {
+    .services-index__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .services-index__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

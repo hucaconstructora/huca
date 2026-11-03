@@ -1,0 +1,184 @@
+---
+import { getCollection } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import heroProjects from '../../assets/site/hero-proyectos.jpg';
+
+const projects = (await getCollection('projects', ({ data }) => data.status === 'published'))
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'es'));
+const types = [...new Set(projects.map((project) => project.data.projectType))];
+const introduction = 'Nuestro diverso portafolio representa una pasión por la calidad, un servicio excepcional al cliente y un compromiso constante de acompañamiento en cada proyecto.';
+---
+
+<MainLayout
+  title="Proyectos de HUCA | Obra, reformas y rehabilitación"
+  description={introduction}
+  ogImage={heroProjects}
+>
+  <PageHero
+    eyebrow="Descubre el trabajo que hemos realizado"
+    title="Proyectos"
+    description={introduction}
+    image={heroProjects}
+    imageAlt="Interior de una cocina renovada en una vivienda de HUCA."
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Proyectos' }]}
+  />
+
+  <section class="projects-index section-pad">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Portfolio HUCA"
+        title="Cada proyecto, una solución a medida"
+        description="Explora una selección de trabajos de reforma y construcción realizados por HUCA."
+        align="center"
+      />
+
+      <div class="project-filters" role="group" aria-label="Filtrar proyectos" data-project-filters>
+        <button type="button" class="is-active" data-project-filter="all" aria-pressed="true">Todos</button>
+        {types.map((type) => (
+          <button type="button" data-project-filter={type.toLowerCase()} aria-pressed="false">{type}</button>
+        ))}
+      </div>
+
+      <div class="project-grid" data-project-grid>
+        {projects.map((project, index) => (
+          <ProjectCard project={project} size={index % 3 === 1 ? 'wide' : 'narrow'} priority={index === 0} />
+        ))}
+      </div>
+      <p class="project-grid__empty" data-project-empty hidden>No hay proyectos en esta categoría.</p>
+    </div>
+  </section>
+</MainLayout>
+
+<script>
+  const filters = document.querySelector('[data-project-filters]');
+  const grid = document.querySelector('[data-project-grid]');
+  const emptyMessage = document.querySelector('[data-project-empty]');
+
+  if (filters && grid) {
+    const buttons = Array.from(filters.querySelectorAll('[data-project-filter]'));
+    const cards = Array.from(grid.querySelectorAll('[data-project-card]'));
+
+    const applyFilter = (filter: string) => {
+      let visible = 0;
+      cards.forEach((card) => {
+        const types = (card.getAttribute('data-project-type') ?? '').toLocaleLowerCase('es');
+        const show = filter === 'all' || types === filter;
+        (card as HTMLElement).hidden = !show;
+        if (show) visible += 1;
+      });
+      buttons.forEach((button) => {
+        const active = button.getAttribute('data-project-filter') === filter;
+        button.setAttribute('aria-pressed', String(active));
+        button.classList.toggle('is-active', active);
+      });
+      if (emptyMessage) (emptyMessage as HTMLElement).hidden = visible > 0;
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        applyFilter(button.getAttribute('data-project-filter') ?? 'all');
+      });
+    });
+
+    const requestedType = new URLSearchParams(window.location.search).get('tipo')?.toLocaleLowerCase('es');
+    if (requestedType && buttons.some((button) => button.getAttribute('data-project-filter') === requestedType)) {
+      applyFilter(requestedType);
+    }
+  }
+</script>
+
+<style>
+  .projects-index {
+    background: white;
+  }
+
+  .project-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 36px;
+    margin: 45px 0 35px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .project-filters button {
+    position: relative;
+    min-height: 42px;
+    padding: 0 1px;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .project-filters button::after {
+    position: absolute;
+    right: 0;
+    bottom: -16px;
+    left: 0;
+    height: 2px;
+    transform: scaleX(0);
+    background: var(--color-accent);
+    content: '';
+    transition: transform 180ms ease;
+  }
+
+  .project-filters button:hover,
+  .project-filters button.is-active {
+    color: var(--color-accent);
+  }
+
+  .project-filters button.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+
+  .project-grid :global(.project-card--wide) {
+    grid-column: span 2;
+  }
+
+  .project-grid__empty {
+    margin-top: 24px;
+    color: var(--color-copy);
+    text-align: center;
+  }
+
+  .project-grid [hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 767px) {
+    .project-filters {
+      justify-content: flex-start;
+      gap: 6px 22px;
+      margin: 32px 0 26px;
+    }
+
+    .project-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .project-grid :global(.project-card--wide) {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

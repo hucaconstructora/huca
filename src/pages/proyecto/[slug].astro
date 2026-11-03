@@ -1,0 +1,10 @@
+---
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'renovacion-total-vivienda-sant-climent' } },
+    { params: { slug: 'reforma-integral-oficinas-cobalt-122' } },
+  ];
+}
+const { slug } = Astro.params;
+return Astro.redirect(`/proyectos/${slug}/`, 301);
+---

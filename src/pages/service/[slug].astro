@@ -1,0 +1,338 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import MainLayout from '../../layouts/MainLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import ContentPlaceholder from '../../components/ContentPlaceholder.astro';
+import FormattedText from '../../components/FormattedText.astro';
+// companyProfile and companyValues no longer needed
+import ArrowRightUp from 'remixicon/icons/Arrows/arrow-right-up-line.svg';
+
+type Service = CollectionEntry<'services'>;
+interface Props {
+  service: Service;
+}
+
+export async function getStaticPaths() {
+  const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+  return services.map((service) => ({
+    params: { slug: service.data.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props as { service: Service };
+const data = service.data;
+const description = `${data.tagline} ${data.description} ${data.details}`;
+---
+
+<MainLayout
+  title={`${data.title} | HUCA Building Solutions`}
+  description={description.slice(0, 160)}
+  ogImage={data.cover}
+  noindex={true}
+>
+  <PageHero
+    eyebrow="Servicio HUCA"
+    title={data.title}
+    description={data.tagline}
+    image={data.cover}
+    imageAlt={data.coverAlt}
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Servicios', href: '/servicios/' }, { label: data.title }]}
+  />
+
+  <section class="service-detail section-pad">
+    <div class="container service-detail__grid">
+      <article class="service-detail__main">
+        <div class="service-detail__intro">
+          <SectionHeading eyebrow="Descripción del servicio" title={data.tagline} />
+          <FormattedText text={data.description} />
+          <FormattedText text={data.details} />
+        </div>
+
+        <section class="service-detail__section">
+          <SectionHeading eyebrow="Alcance" title="Qué incluye el servicio" />
+          <ul class="service-includes">
+            {data.includes.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+
+        <section class="service-detail__section">
+          <ContentPlaceholder
+            title="Proceso de trabajo y beneficios"
+            description="Pendiente de que HUCA confirme las etapas, plazos y beneficios específicos de este servicio."
+          />
+        </section>
+
+        <section class="service-detail__section">
+          <SectionHeading eyebrow="Dudas habituales" title="Preguntas frecuentes" />
+          <ContentPlaceholder
+            compact={true}
+            title="Preguntas frecuentes del servicio"
+            description="Añadir respuestas aprobadas por HUCA antes de publicar esta sección."
+          />
+        </section>
+
+        <section class="service-cta">
+          <div class="service-cta__inner">
+            <div class="service-cta__copy">
+              <p class="eyebrow eyebrow--light">Empecemos a trabajar juntos</p>
+              <h2>¿Necesitas este servicio?</h2>
+              <p>Cuéntanos tu proyecto y te ofrecemos un acompañamiento profesional desde el primer contacto.</p>
+            </div>
+            <div class="service-cta__actions">
+              <a class="service-cta__phone" href="tel:+34671774262">
+                <span class="service-cta__phone-label">Llámanos</span>
+                <strong>+34 671.774.262</strong>
+              </a>
+              <a class="button button--light" href="/contacto/">Solicitar presupuesto <span class="button__arrow" aria-hidden="true"><ArrowRightUp width={20} height={20} /></span></a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .service-detail__grid {
+    display: block;
+  }
+
+  .service-cta {
+    margin-top: 48px;
+    padding: clamp(32px, 5vw, 56px);
+    background: var(--color-charcoal);
+    color: white;
+  }
+
+  .service-cta__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .service-cta__copy h2 {
+    margin: 8px 0 6px;
+    color: white;
+    font-size: clamp(24px, 3vw, 36px);
+  }
+
+  .service-cta__copy p:not(.eyebrow) {
+    color: #cfcfcf;
+    font-size: 15px;
+  }
+
+  .service-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .service-cta__phone {
+    display: grid;
+    gap: 2px;
+    color: white;
+    text-align: right;
+  }
+
+  .service-cta__phone-label {
+    color: var(--color-muted);
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .service-cta__phone strong {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .service-cta__phone:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 760px) {
+    .service-cta__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .service-cta__phone {
+      text-align: left;
+    }
+  }
+
+  .service-detail__main {
+    display: grid;
+    gap: 35px;
+  }
+
+  .service-detail__intro,
+  .service-detail__section {
+    display: grid;
+    gap: 20px;
+  }
+
+  .service-includes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-includes li {
+    position: relative;
+    padding-left: 20px;
+    color: var(--color-ink);
+    font-size: 15px;
+  }
+
+  .service-includes li::before {
+    position: absolute;
+    top: 0.55em;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    background: var(--color-accent);
+    content: '';
+  }
+
+  .service-sidebar {
+    display: grid;
+    gap: 24px;
+  }
+
+  .service-sidebar__block {
+    border: 1px solid var(--color-line);
+    background: white;
+  }
+
+  .service-sidebar__heading {
+    padding: 14px 18px;
+    background: var(--color-charcoal);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .service-sidebar__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 17px;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-copy);
+    font-size: 14px;
+    transition: color 160ms ease;
+  }
+
+  .service-sidebar__link span {
+    color: var(--color-accent);
+  }
+
+  .service-sidebar__link:hover,
+  .service-sidebar__link.is-current {
+    color: var(--color-accent-dark);
+  }
+
+  .service-sidebar__block--why {
+    padding-bottom: 20px;
+  }
+
+  .service-sidebar__block--why ul {
+    display: grid;
+    gap: 12px;
+    margin: 18px 18px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-sidebar__block--why li {
+    position: relative;
+    padding-left: 19px;
+    color: var(--color-copy);
+    font-size: 14px;
+  }
+
+  .service-sidebar__block--why li::before {
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+    content: '✓';
+    font-weight: 700;
+  }
+
+  .service-sidebar__block--why .text-link {
+    margin-left: 18px;
+  }
+
+  .service-sidebar__contact {
+    display: grid;
+    justify-items: center;
+    gap: 13px;
+    padding: 26px 22px;
+    background: var(--color-charcoal);
+    color: #d5d5d5;
+    text-align: center;
+  }
+
+  .service-sidebar__logo {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    background: var(--color-accent);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .service-sidebar__contact > p:not(.eyebrow) {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .service-sidebar__contact > a:not(.button) {
+    color: white;
+    font-size: 14px;
+  }
+
+  .service-sidebar__phone {
+    font-family: var(--font-heading);
+    font-size: 23px !important;
+    font-weight: 700;
+  }
+
+  .service-sidebar__contact .button {
+    margin-top: 6px;
+  }
+
+  @media (max-width: 850px) {
+    .service-detail__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .service-sidebar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .service-includes,
+    .service-sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

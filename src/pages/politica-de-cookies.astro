@@ -1,0 +1,17 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import ContentPlaceholder from '../components/ContentPlaceholder.astro';
+---
+
+<MainLayout title="Política de cookies | HUCA" description="Información sobre el uso de cookies en el sitio web de HUCA." noindex={true}>
+  <section class="legal-page section-pad">
+    <div class="container">
+      <h1>Política de cookies</h1>
+      <ContentPlaceholder title="Texto legal pendiente de aprobación" description="Esta página no debe publicarse hasta incorporar la política de cookies aprobada por HUCA." />
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .legal-page h1 { margin-bottom: 28px; font-size: clamp(32px, 4vw, 48px); }
+</style>

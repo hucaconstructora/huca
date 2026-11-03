@@ -1,0 +1,52 @@
+---
+import { Picture } from 'astro:assets';
+import Home from 'remixicon/icons/Buildings/home-line.svg';
+import hero from '../assets/site/hero-proyectos.jpg';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Página no encontrada | HUCA Building Solutions</title>
+  </head>
+  <body>
+    <main class="not-found">
+      <div class="not-found__image">
+        <Picture
+          src={hero}
+          alt="Interior reformado de una vivienda de HUCA."
+          widths={[480, 800, 1200, 1600]}
+          sizes="(max-width: 800px) 100vw, 64vw"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          fit="cover"
+          priority
+        />
+      </div>
+      <section class="not-found__copy">
+        <p class="eyebrow">Error 404</p>
+        <h1>Página no encontrada</h1>
+        <p>La dirección puede haber cambiado o el contenido ya no está disponible.</p>
+        <a class="button" href="/">Volver al inicio <span class="button__arrow" aria-hidden="true"><Home width={16} height={16} /></span></a>
+        <div class="not-found__mark" aria-hidden="true">HUCA</div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  .not-found { display: grid; min-height: 100vh; grid-template-columns: 1.15fr 0.85fr; background: white; }
+  .not-found__image { min-height: 100vh; overflow: hidden; background: var(--color-charcoal); }
+  .not-found__image :global(picture), .not-found__image :global(img) { width: 100%; height: 100%; }
+  .not-found__image :global(img) { object-fit: cover; }
+  .not-found__copy { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 20px; padding: clamp(34px, 7vw, 100px); overflow: hidden; }
+  .not-found__copy h1 { max-width: 620px; font-size: clamp(38px, 5vw, 68px); line-height: 1.12; text-transform: uppercase; }
+  .not-found__copy > p:not(.eyebrow) { max-width: 480px; font-size: 17px; line-height: 1.6; }
+  .not-found__mark { position: absolute; right: -35px; bottom: -75px; color: rgb(143 193 180 / 9%); font-family: var(--font-heading); font-size: clamp(180px, 30vw, 420px); font-weight: 700; letter-spacing: -0.1em; line-height: 1; }
+  .not-found__copy .button { position: relative; z-index: 1; margin-top: 12px; }
+  @media (max-width: 800px) { .not-found { grid-template-columns: 1fr; } .not-found__image { min-height: 40vh; } .not-found__copy { min-height: 60vh; } }
+</style>

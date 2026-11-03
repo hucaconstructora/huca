@@ -1,0 +1,223 @@
+# Pages CMS 2.x configuration. Project media remains in the repository.
+# Image values are written relative to each Markdown file so Astro's
+# Content Collections image() helper can resolve them at build time.
+media:
+  input: src/assets/projects
+  output: ../../assets/projects
+  extensions:
+    - jpg
+    - jpeg
+    - png
+    - webp
+    - avif
+  rename: random
+
+settings:
+  commit:
+    identity: app
+
+content:
+  - name: projects
+    label: Proyectos
+    type: collection
+    path: src/content/projects
+    format: yaml-frontmatter
+    filename: '{slug}.md'
+    operations:
+      create: true
+      rename: false
+      delete: false
+    view:
+      fields:
+        - title
+        - projectType
+        - year
+        - status
+        - featured
+        - order
+      primary: title
+      sort:
+        - order
+        - year
+      default:
+        sort: order
+        order: asc
+    fields:
+      - name: title
+        label: Título del proyecto
+        type: string
+        required: true
+        options:
+          maxlength: 140
+
+      - name: slug
+        label: URL del proyecto (slug)
+        type: string
+        required: true
+        description: Minúsculas, números y guiones; no incluyas barras ni espacios.
+        pattern:
+          regex: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          message: Usa minúsculas, números y guiones, sin espacios.
+        options:
+          minlength: 3
+          maxlength: 80
+
+      - name: summary
+        label: Descripción corta
+        type: text
+        required: true
+        options:
+          maxlength: 320
+
+      - name: description
+        label: Descripción completa
+        type: text
+        required: true
+
+      - name: challenge
+        label: Reto del cliente
+        type: text
+
+      - name: approach
+        label: Enfoque y solución
+        type: text
+
+      - name: cover
+        label: Imagen principal
+        type: image
+        required: true
+        description: Sube una fotografía del proyecto. Se guardará en la carpeta de imágenes de proyectos.
+
+      - name: coverAlt
+        label: Texto alternativo de la imagen principal
+        type: string
+        required: true
+        description: Describe brevemente lo que aparece en la fotografía.
+        options:
+          maxlength: 180
+
+      - name: gallery
+        label: Galería de fotografías
+        type: object
+        required: true
+        description: Añade al menos una imagen y escribe un texto alternativo para cada fotografía.
+        list:
+          min: 1
+          max: 24
+          collapsible:
+            collapsed: true
+            summary: '{alt} ({index})'
+        fields:
+          - name: src
+            label: Fotografía
+            type: image
+            required: true
+          - name: alt
+            label: Texto alternativo
+            type: string
+            required: true
+            options:
+              maxlength: 180
+
+      - name: location
+        label: Localización
+        type: string
+        required: true
+        options:
+          maxlength: 160
+
+      - name: region
+        label: Región o provincia
+        type: string
+        options:
+          maxlength: 120
+
+      - name: city
+        label: Ciudad o municipio
+        type: string
+        options:
+          maxlength: 120
+
+      - name: projectType
+        label: Tipo de proyecto
+        type: string
+        required: true
+        options:
+          maxlength: 100
+
+      - name: year
+        label: Año de finalización
+        type: number
+        required: true
+        options:
+          min: 1900
+          max: 2100
+
+      - name: builtAreaM2
+        label: Superficie construida (m²)
+        type: number
+        description: Déjalo vacío si no corresponde o no se conoce.
+        options:
+          min: 0.1
+
+      - name: client
+        label: Cliente
+        type: string
+        options:
+          maxlength: 120
+
+      - name: budget
+        label: Presupuesto (opcional)
+        type: string
+        options:
+          maxlength: 120
+
+      - name: sector
+        label: Sector
+        type: string
+        options:
+          maxlength: 100
+
+      - name: subSector
+        label: Subsector
+        type: string
+        options:
+          maxlength: 100
+
+      - name: status
+        label: Estado de publicación
+        type: select
+        required: true
+        default: draft
+        options:
+          values:
+            - name: draft
+              label: Borrador
+            - name: published
+              label: Publicado
+            - name: archived
+              label: Retirado
+
+      - name: featured
+        label: Proyecto destacado
+        type: boolean
+        default: false
+
+      - name: order
+        label: Orden de aparición
+        type: number
+        default: 0
+        options:
+          min: 0
+
+      - name: seoTitle
+        label: Título SEO (opcional)
+        type: string
+        options:
+          maxlength: 70
+
+      - name: seoDescription
+        label: Descripción SEO (opcional)
+        type: text
+        options:
+          maxlength: 160

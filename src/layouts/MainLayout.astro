@@ -5,6 +5,7 @@ import Footer from '@/components/Footer.astro';
 import { companyProfile } from '@/data/company';
 import icon from '@/assets/site/logo-huca.svg';
 import '../styles/global.css';
+const defaultOgImage = '/og-image.png';
 
 interface Props {
   title: string;
@@ -28,9 +29,10 @@ const {
 const origin = Astro.site?.origin ?? 'https://hucaconstructora.com';
 const canonical = new URL(Astro.url.pathname, origin).href;
 const iconUrl = new URL(icon.src, origin).href;
-const imageUrl = ogImage
-  ? new URL(typeof ogImage === 'string' ? ogImage : ogImage.src, origin).href
-  : undefined;
+const imageUrl = new URL(
+  typeof ogImage === 'string' ? ogImage : (ogImage ? ogImage.src : defaultOgImage),
+  origin
+).href;
 
 const organization = {
   '@context': 'https://schema.org',

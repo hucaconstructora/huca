@@ -54,7 +54,7 @@ sector: Residencial
 subSector: Renovación integral
 status: published
 featured: true
-order: 1
+order: 3
 seoTitle: Renovación de vivienda en Sant Climent | HUCA
 seoDescription: "Reforma integral de vivienda unifamiliar en Sant Climent:
   redistribución interior, mejora del aislamiento y renovación de

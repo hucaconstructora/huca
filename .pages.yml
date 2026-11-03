@@ -17,6 +17,34 @@ settings:
     identity: app
 
 content:
+  - name: project-types
+    label: Tipos de proyecto
+    type: collection
+    path: src/content/project-types
+    format: yaml-frontmatter
+    filename: '{name}.md'
+    operations:
+      create: true
+      rename: false
+      delete: true
+    view:
+      fields:
+        - name
+      primary: name
+      sort:
+        - name
+      default:
+        sort: name
+        order: asc
+    fields:
+      - name: name
+        label: Tipo de proyecto
+        type: string
+        required: true
+        description: Nombre visible del tipo de proyecto.
+        options:
+          maxlength: 100
+
   - name: projects
     label: Proyectos
     type: collection
@@ -47,6 +75,7 @@ content:
         label: Título del proyecto
         type: string
         required: true
+        description: Nombre visible del proyecto en la web.
         options:
           maxlength: 140
 
@@ -62,10 +91,117 @@ content:
           minlength: 3
           maxlength: 80
 
+      - name: status
+        label: Estado de publicación
+        type: select
+        required: true
+        description: Controla si el proyecto es visible en la web.
+        default: draft
+        options:
+          values:
+            - name: draft
+              label: Borrador
+            - name: published
+              label: Publicado
+            - name: archived
+              label: Retirado
+
+      - name: featured
+        label: Proyecto destacado
+        type: boolean
+        description: Destaca el proyecto en la portada.
+        default: false
+
+      - name: order
+        label: Orden de aparición
+        type: number
+        description: Número para ordenar (menor primero).
+        default: 0
+        options:
+          min: 0
+
+      - name: projectType
+        label: Tipo de proyecto
+        type: reference
+        required: true
+        description: Selecciona un tipo existente o crea uno nuevo en la colección "Tipos de proyecto".
+        options:
+          collection: project-types
+          search: name
+          value: "{primary}"
+          label: "{primary}"
+
+      - name: year
+        label: Año de finalización
+        type: number
+        required: true
+        description: Año en que se finalizó el proyecto.
+        options:
+          min: 1900
+          max: 2100
+
+      - name: client
+        label: Cliente
+        type: string
+        description: "Deja \"Privado\" o vacío si no se quiere dar a conocer."
+        options:
+          maxlength: 120
+
+      - name: sector
+        label: Sector
+        type: string
+        description: Sector de actividad del cliente o proyecto.
+        options:
+          maxlength: 100
+
+      - name: subSector
+        label: Subsector
+        type: string
+        description: Subsector o especialidad dentro del sector.
+        options:
+          maxlength: 100
+
+      - name: budget
+        label: Presupuesto (opcional)
+        type: string
+        description: Presupuesto aproximado o rango del proyecto.
+        options:
+          maxlength: 120
+
+      - name: builtAreaM2
+        label: Superficie construida (m²)
+        type: number
+        description: Déjalo vacío si no corresponde o no se conoce.
+        options:
+          min: 0.1
+
+      - name: location
+        label: Localización
+        type: string
+        required: true
+        description: Dirección o zona general del proyecto.
+        options:
+          maxlength: 160
+
+      - name: region
+        label: Región o provincia
+        type: string
+        description: Provincia o región donde se realizó el proyecto.
+        options:
+          maxlength: 120
+
+      - name: city
+        label: Ciudad o municipio
+        type: string
+        description: Ciudad o municipio del proyecto.
+        options:
+          maxlength: 120
+
       - name: summary
         label: Descripción corta
         type: text
         required: true
+        description: Texto breve para listados, tarjetas y SEO.
         options:
           maxlength: 320
 
@@ -73,14 +209,17 @@ content:
         label: Descripción completa
         type: text
         required: true
+        description: Descripción detallada del proyecto para la página de detalle.
 
       - name: challenge
         label: Reto del cliente
         type: text
+        description: Problema o necesidad principal del cliente.
 
       - name: approach
         label: Enfoque y solución
         type: text
+        description: Solución aplicada por HUCA para resolver el reto.
 
       - name: cover
         label: Imagen principal
@@ -119,105 +258,16 @@ content:
             options:
               maxlength: 180
 
-      - name: location
-        label: Localización
-        type: string
-        required: true
-        options:
-          maxlength: 160
-
-      - name: region
-        label: Región o provincia
-        type: string
-        options:
-          maxlength: 120
-
-      - name: city
-        label: Ciudad o municipio
-        type: string
-        options:
-          maxlength: 120
-
-      - name: projectType
-        label: Tipo de proyecto
-        type: string
-        required: true
-        options:
-          maxlength: 100
-
-      - name: year
-        label: Año de finalización
-        type: number
-        required: true
-        options:
-          min: 1900
-          max: 2100
-
-      - name: builtAreaM2
-        label: Superficie construida (m²)
-        type: number
-        description: Déjalo vacío si no corresponde o no se conoce.
-        options:
-          min: 0.1
-
-      - name: client
-        label: Cliente
-        type: string
-        options:
-          maxlength: 120
-
-      - name: budget
-        label: Presupuesto (opcional)
-        type: string
-        options:
-          maxlength: 120
-
-      - name: sector
-        label: Sector
-        type: string
-        options:
-          maxlength: 100
-
-      - name: subSector
-        label: Subsector
-        type: string
-        options:
-          maxlength: 100
-
-      - name: status
-        label: Estado de publicación
-        type: select
-        required: true
-        default: draft
-        options:
-          values:
-            - name: draft
-              label: Borrador
-            - name: published
-              label: Publicado
-            - name: archived
-              label: Retirado
-
-      - name: featured
-        label: Proyecto destacado
-        type: boolean
-        default: false
-
-      - name: order
-        label: Orden de aparición
-        type: number
-        default: 0
-        options:
-          min: 0
-
       - name: seoTitle
         label: Título SEO (opcional)
         type: string
+        description: Título para buscadores (máx. 70 caracteres).
         options:
           maxlength: 70
 
       - name: seoDescription
         label: Descripción SEO (opcional)
         type: text
+        description: Descripción para buscadores (máx. 160 caracteres).
         options:
           maxlength: 160

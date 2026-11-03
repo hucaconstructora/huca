@@ -1,0 +1,9 @@
+# Redirects inherited from WordPress
+/proyecto/* /proyectos/:splat 301
+/proyecto/reforma/ /proyectos/ 301
+/author/* / 301
+/pxl-template/* / 301
+/contacto /contacto/ 301
+
+# Redirect old service paths if needed
+/service/* /servicios/:splat 301

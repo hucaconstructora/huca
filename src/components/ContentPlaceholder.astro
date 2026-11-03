@@ -1,0 +1,42 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  compact?: boolean;
+}
+
+const { title, description = 'Pendiente de contenido aprobado por HUCA.', compact = false } = Astro.props;
+---
+
+<aside class:list={['content-placeholder', compact && 'content-placeholder--compact']} aria-label={`Contenido pendiente: ${title}`}>
+  <p class="content-placeholder__label"><span aria-hidden="true">▧</span> Pendiente de aprobación</p>
+  <h3>{title}</h3>
+  <p>{description}</p>
+</aside>
+
+<style>
+  .content-placeholder {
+    display: grid;
+    min-height: 190px;
+    align-content: center;
+    gap: 12px;
+    padding: clamp(24px, 4vw, 42px);
+    border: 1px dashed rgb(143 193 180 / 75%);
+    background: rgb(143 193 180 / 5%);
+  }
+
+  .content-placeholder h3 {
+    color: var(--color-ink);
+    font-size: 22px;
+  }
+
+  .content-placeholder > p:last-child {
+    max-width: 520px;
+    font-size: 15px;
+  }
+
+  .content-placeholder--compact {
+    min-height: 145px;
+    padding: 20px;
+  }
+</style>

@@ -1,0 +1,441 @@
+---
+import Send from 'remixicon/icons/Business/send-plane-line.svg';
+---
+
+<form
+  class="contact-form"
+  name="contacto"
+  method="POST"
+  action="/"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  data-contact-form
+  novalidate
+>
+  <input type="hidden" name="form-name" value="contacto" />
+  <label class="contact-form__honeypot" aria-hidden="true">
+    No rellenar este campo
+    <input name="bot-field" tabindex="-1" autocomplete="off" />
+  </label>
+
+  <div class="contact-form__grid">
+    <div class="contact-form__field">
+      <label for="contact-name">Nombre completo <span aria-hidden="true">*</span></label>
+      <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" required />
+      <p class="contact-form__error" data-error="name" aria-live="polite"></p>
+    </div>
+    <div class="contact-form__field">
+      <label for="contact-email">Correo electrónico <span aria-hidden="true">*</span></label>
+      <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="200" required />
+      <p class="contact-form__error" data-error="email" aria-live="polite"></p>
+    </div>
+    <div class="contact-form__field">
+      <label for="contact-phone">Teléfono <span aria-hidden="true">*</span></label>
+      <input id="contact-phone" name="phone" type="tel" autocomplete="tel" maxlength="40" required />
+      <p class="contact-form__error" data-error="phone" aria-live="polite"></p>
+    </div>
+    <div class="contact-form__field contact-form__field--wide">
+      <label for="contact-message">Cuéntanos tu proyecto <span aria-hidden="true">*</span></label>
+      <textarea id="contact-message" name="message" rows="6" maxlength="3000" required></textarea>
+      <p class="contact-form__error" data-error="message" aria-live="polite"></p>
+    </div>
+    <div class="contact-form__consent contact-form__field--wide">
+      <input id="contact-privacy" name="privacy-consent" type="checkbox" value="accepted" required />
+      <label for="contact-privacy">He leído y acepto la <a href="/politica-de-privacidad/">política de privacidad</a>.</label>
+      <p class="contact-form__error" data-error="privacy" aria-live="polite"></p>
+    </div>
+    <div class="contact-form__status contact-form__field--wide" data-form-status aria-live="polite"></div>
+    <div class="contact-form__submit contact-form__field--wide">
+      <p class="contact-form__required">* Campos obligatorios</p>
+      <button class="button" type="submit" data-submit-btn>
+        Enviar mensaje <span class="button__arrow" aria-hidden="true"><Send width={16} height={16} /></span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<script>
+  document.querySelectorAll('[data-contact-form]').forEach((form) => {
+    const status = form.querySelector('[data-form-status]') as HTMLElement | null;
+    const submitBtn = form.querySelector('[data-submit-btn]') as HTMLButtonElement | null;
+    const fields = {
+      name: form.querySelector('#contact-name') as HTMLInputElement | null,
+      email: form.querySelector('#contact-email') as HTMLInputElement | null,
+      phone: form.querySelector('#contact-phone') as HTMLInputElement | null,
+      message: form.querySelector('#contact-message') as HTMLTextAreaElement | null,
+      privacy: form.querySelector('#contact-privacy') as HTMLInputElement | null,
+    };
+
+    function showError(fieldName: string, message: string) {
+      const errorEl = form.querySelector(`[data-error="${fieldName}"]`);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.add('is-visible');
+      }
+      const field = (fields as Record<string, HTMLInputElement | HTMLTextAreaElement | null>)[fieldName];
+      if (field) field.classList.add('has-error');
+    }
+
+    function clearError(fieldName: string) {
+      const errorEl = form.querySelector(`[data-error="${fieldName}"]`);
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.classList.remove('is-visible');
+      }
+      const field = (fields as Record<string, HTMLInputElement | HTMLTextAreaElement | null>)[fieldName];
+      if (field) field.classList.remove('has-error');
+    }
+
+    function clearAllErrors() {
+      Object.keys(fields).forEach(clearError);
+    }
+
+    function validateField(fieldName: string) {
+      const field = (fields as Record<string, HTMLInputElement | HTMLTextAreaElement | null>)[fieldName];
+      if (!field) return true;
+
+      clearError(fieldName);
+
+      if (fieldName === 'name') {
+        if (!field.value.trim()) {
+          showError(fieldName, 'El nombre es obligatorio.');
+          return false;
+        }
+        if (field.value.trim().length < 2) {
+          showError(fieldName, 'El nombre debe tener al menos 2 caracteres.');
+          return false;
+        }
+      }
+
+      if (fieldName === 'email') {
+        if (!field.value.trim()) {
+          showError(fieldName, 'El correo electrónico es obligatorio.');
+          return false;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(field.value.trim())) {
+          showError(fieldName, 'Introduce un correo electrónico válido.');
+          return false;
+        }
+      }
+
+      if (fieldName === 'phone') {
+        if (!field.value.trim()) {
+          showError(fieldName, 'El teléfono es obligatorio.');
+          return false;
+        }
+        const phoneRegex = /^[0-9\s.\-+()]{6,}$/;
+        if (!phoneRegex.test(field.value.trim())) {
+          showError(fieldName, 'Introduce un teléfono válido (mínimo 6 dígitos).');
+          return false;
+        }
+      }
+
+      if (fieldName === 'message') {
+        if (!field.value.trim()) {
+          showError(fieldName, 'El mensaje es obligatorio.');
+          return false;
+        }
+        if (field.value.trim().length < 10) {
+          showError(fieldName, 'El mensaje debe tener al menos 10 caracteres.');
+          return false;
+        }
+      }
+
+      if (fieldName === 'privacy') {
+        if (!(field as HTMLInputElement).checked) {
+          showError(fieldName, 'Debes aceptar la política de privacidad.');
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function validateAll() {
+      let valid = true;
+      Object.keys(fields).forEach((fieldName) => {
+        if (!validateField(fieldName)) valid = false;
+      });
+      return valid;
+    }
+
+    // Real-time validation on blur
+    Object.keys(fields).forEach((fieldName) => {
+      const field = (fields as Record<string, HTMLInputElement | HTMLTextAreaElement | null>)[fieldName];
+      if (field) {
+        field.addEventListener('blur', () => validateField(fieldName));
+        field.addEventListener('input', () => clearError(fieldName));
+      }
+    });
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (status) {
+        status.textContent = '';
+        status.classList.remove('is-success', 'is-error');
+      }
+
+      if (!validateAll()) {
+        if (status) {
+          status.textContent = 'Revisa los campos marcados en rojo.';
+          status.classList.add('is-error');
+        }
+        return;
+      }
+
+      if (submitBtn) {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('is-loading');
+        }
+      }
+      if (status) {
+        status.textContent = 'Enviando tu mensaje…';
+      }
+
+      try {
+        const formData = new FormData(form as HTMLFormElement);
+        const params = new URLSearchParams();
+        formData.forEach((value, key) => {
+          params.append(key, value.toString());
+        });
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        });
+
+        if (response.ok) {
+          if (status) {
+            status.textContent = 'Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.';
+            status.classList.add('is-success');
+          }
+          (form as HTMLFormElement).reset();
+          clearAllErrors();
+        } else {
+          throw new Error('Network response was not ok');
+        }
+      } catch (error) {
+        if (status) {
+          status.textContent = 'Error al enviar el mensaje. Por favor, inténtalo de nuevo o contáctanos por teléfono.';
+          status.classList.add('is-error');
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('is-loading');
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact-form {
+    padding: clamp(24px, 4vw, 42px);
+    border-top: 4px solid var(--color-accent);
+    background: white;
+    box-shadow: 0 14px 44px rgb(18 19 21 / 7%);
+  }
+
+  .contact-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+  }
+
+  .contact-form__field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .contact-form__field--wide {
+    grid-column: 1 / -1;
+  }
+
+  .contact-form label {
+    color: var(--color-ink);
+    font-family: var(--font-heading);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .contact-form label span {
+    color: var(--color-accent);
+  }
+
+  .contact-form input:not([type='checkbox']):not([type='hidden']),
+  .contact-form textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 15px;
+    border: 1px solid #dedede;
+    border-radius: 0;
+    background: white;
+    color: var(--color-ink);
+    font: 400 16px/1.45 var(--font-body);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .contact-form textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgb(143 193 180 / 14%);
+    outline: none;
+  }
+
+  .contact-form input.has-error,
+  .contact-form textarea.has-error {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgb(229 62 62 / 14%);
+  }
+
+  .contact-form__error {
+    min-height: 0;
+    color: #e53e3e;
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 160ms ease, max-height 160ms ease;
+  }
+
+  .contact-form__error.is-visible {
+    opacity: 1;
+    max-height: 2em;
+    min-height: 1.2em;
+  }
+
+  .contact-form__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .contact-form__consent input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin: 2px 0 0;
+    accent-color: var(--color-accent);
+  }
+
+  .contact-form__consent label {
+    color: var(--color-copy);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .contact-form__consent a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 3px;
+  }
+
+  .contact-form__submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .contact-form button[type='submit'] {
+    cursor: pointer;
+  }
+
+  .contact-form__required {
+    color: var(--color-copy);
+    font-size: 13px;
+  }
+
+  .contact-form__status {
+    min-height: 1.3em;
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 0;
+    transition: all 200ms ease;
+  }
+
+  .contact-form__status.is-success {
+    background: rgb(143 193 180 / 15%);
+    color: var(--color-accent-dark);
+    border: 1px solid var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contact-form__status.is-success::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-accent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E") no-repeat center / contain;
+    flex: 0 0 20px;
+  }
+
+  .contact-form__status.is-error {
+    background: rgb(229 62 62 / 10%);
+    color: #c53030;
+    border: 1px solid #e53e3e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contact-form__status.is-error::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #e53e3e;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z'/%3E%3C/svg%3E") no-repeat center / contain;
+    flex: 0 0 20px;
+  }
+
+  .contact-form__honeypot {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    clip-path: inset(50%) !important;
+  }
+
+  .button.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  @media (max-width: 600px) {
+    .contact-form__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-form__field--wide {
+      grid-column: auto;
+    }
+
+    .contact-form__submit {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

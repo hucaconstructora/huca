@@ -1,0 +1,169 @@
+---
+import { Picture } from 'astro:assets';
+import ChevronLeft from 'remixicon/icons/Arrows/arrow-left-s-line.svg';
+import ChevronRight from 'remixicon/icons/Arrows/arrow-right-s-line.svg';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+---
+
+<section class="project-gallery" data-project-gallery aria-label={`Galería del proyecto ${project.data.title}`}>
+  <div class="project-gallery__controls">
+    <button type="button" data-gallery-prev aria-label="Ver fotografía anterior" disabled>
+      <ChevronLeft width={20} height={20} aria-hidden="true" />
+    </button>
+    <button type="button" data-gallery-next aria-label="Ver fotografía siguiente">
+      <ChevronRight width={20} height={20} aria-hidden="true" />
+    </button>
+    <span class="project-gallery__status" aria-live="polite" data-gallery-status></span>
+  </div>
+  <div class="project-gallery__viewport" data-gallery-viewport tabindex="0" aria-label="Fotografías del proyecto; usa las flechas para desplazarte">
+    {project.data.gallery.map((photo, index) => (
+      <figure class="project-gallery__slide" data-gallery-slide>
+        <Picture
+          src={photo.src}
+          alt={photo.alt}
+          widths={[480, 768, 960, 1200]}
+          sizes="(max-width: 767px) 100vw, min(100vw - 48px, 1170px)"
+          formats={['avif', 'webp']}
+          fallbackFormat="webp"
+          fit="cover"
+          loading={index === 0 ? 'eager' : 'lazy'}
+          priority={index === 0}
+        />
+      </figure>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-project-gallery]').forEach((gallery) => {
+    const viewport = gallery.querySelector('[data-gallery-viewport]');
+    const slides = Array.from(gallery.querySelectorAll('[data-gallery-slide]'));
+    const previous = gallery.querySelector('[data-gallery-prev]') as HTMLButtonElement | null;
+    const next = gallery.querySelector('[data-gallery-next]') as HTMLButtonElement | null;
+    const status = gallery.querySelector('[data-gallery-status]');
+
+    if (!viewport || !slides.length || !previous || !next) return;
+
+    const getIndex = () => {
+      const width = viewport.clientWidth || 1;
+      return Math.min(slides.length - 1, Math.max(0, Math.round(viewport.scrollLeft / width)));
+    };
+
+    const update = () => {
+      const index = getIndex();
+      previous.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      if (status) status.textContent = `Fotografía ${index + 1} de ${slides.length}`;
+    };
+
+    previous.addEventListener('click', () => {
+      viewport.scrollBy({ left: -viewport.clientWidth, behavior: 'smooth' });
+    });
+    next.addEventListener('click', () => {
+      viewport.scrollBy({ left: viewport.clientWidth, behavior: 'smooth' });
+    });
+    viewport.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>
+
+<style>
+  .project-gallery {
+    position: relative;
+  }
+
+  .project-gallery__viewport {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .project-gallery__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-gallery__slide {
+    position: relative;
+    width: 100%;
+    min-width: 100%;
+    aspect-ratio: 1.625;
+    overflow: hidden;
+    background: var(--color-cloud);
+    scroll-snap-align: start;
+  }
+
+  .project-gallery__slide :global(picture),
+  .project-gallery__slide :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .project-gallery__slide :global(img) {
+    object-fit: cover;
+  }
+
+  .project-gallery__controls {
+    position: absolute;
+    z-index: 2;
+    inset: auto 20px 20px auto;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .project-gallery__controls button {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 0;
+    background: var(--color-ink);
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 150ms ease, opacity 150ms ease;
+  }
+
+  .project-gallery__controls button:hover:not(:disabled) {
+    background: var(--color-accent);
+  }
+
+  .project-gallery__controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  .project-gallery__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 767px) {
+    .project-gallery__slide {
+      aspect-ratio: 1.05;
+    }
+
+    .project-gallery__controls {
+      right: 12px;
+      bottom: 12px;
+    }
+
+    .project-gallery__controls button {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>

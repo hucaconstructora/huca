@@ -1,0 +1,138 @@
+---
+import { Image } from 'astro:assets';
+import ArrowUpRight from 'remixicon/icons/Arrows/arrow-right-up-line.svg';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  size?: 'narrow' | 'wide';
+  priority?: boolean;
+}
+
+const { project, size = 'narrow', priority = false } = Astro.props;
+const href = `/proyectos/${project.data.slug}/`;
+---
+
+<article class:list={['project-card', `project-card--${size}`]} data-project-card data-project-type={project.data.projectType}>
+  <a class="project-card__link" href={href}>
+    <div class="project-card__media">
+      <Image
+        src={project.data.cover}
+        alt={project.data.coverAlt}
+        width={1200}
+        widths={[320, 480, 640, 960, 1200]}
+        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 34vw"
+        format="webp"
+        loading={priority ? 'eager' : 'lazy'}
+        priority={priority}
+      />
+      <span class="project-card__shade" aria-hidden="true"></span>
+      <span class="project-card__content">
+        <span class="project-card__type">{project.data.projectType}</span>
+        <span class="project-card__title">{project.data.title}</span>
+        <span class="project-card__arrow" aria-hidden="true"><ArrowUpRight width={20} height={20} /></span>
+      </span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .project-card {
+    min-width: 0;
+  }
+
+  .project-card__link {
+    display: block;
+    height: 100%;
+  }
+
+  .project-card__media {
+    position: relative;
+    min-height: 310px;
+    aspect-ratio: 0.84;
+    overflow: hidden;
+    background: var(--color-charcoal);
+  }
+
+  .project-card--wide .project-card__media {
+    aspect-ratio: 1.75;
+  }
+
+  .project-card__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 650ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .project-card__shade {
+    position: absolute;
+    inset: 30% 0 0;
+    background: linear-gradient(transparent, rgb(18 19 21 / 85%));
+    transition: inset 300ms ease;
+  }
+
+  .project-card__content {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    left: 24px;
+    display: grid;
+    gap: 8px;
+    color: white;
+  }
+
+  .project-card__type {
+    color: rgb(255 255 255 / 78%);
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .project-card__title {
+    max-width: 570px;
+    padding-right: 42px;
+    font-family: var(--font-heading);
+    font-size: clamp(20px, 2vw, 27px);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .project-card__arrow {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    background: var(--color-accent);
+    color: white;
+    font-size: 20px;
+    transition: background-color 180ms ease;
+  }
+
+  .project-card__link:hover .project-card__media :global(img) {
+    transform: scale(1.045);
+  }
+
+  .project-card__link:hover .project-card__arrow {
+    background: var(--color-ink);
+  }
+
+  @media (max-width: 767px) {
+    .project-card__media,
+    .project-card--wide .project-card__media {
+      min-height: 0;
+      aspect-ratio: 1.16;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card__media :global(img) {
+      transition: none;
+    }
+  }
+</style>

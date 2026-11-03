@@ -1,0 +1,70 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+type Block = { type: 'paragraph'; text: string } | { type: 'list'; items: string[] };
+const blocks: Block[] = [];
+let listItems: string[] = [];
+let paragraphLines: string[] = [];
+
+const flushList = () => {
+  if (listItems.length) blocks.push({ type: 'list', items: listItems });
+  listItems = [];
+};
+const flushParagraph = () => {
+  const value = paragraphLines.join(' ').trim();
+  if (value) blocks.push({ type: 'paragraph', text: value });
+  paragraphLines = [];
+};
+
+for (const rawLine of text.split(/\r?\n/)) {
+  const line = rawLine.trim();
+  if (!line) {
+    flushList();
+    flushParagraph();
+  } else if (/^[-•]\s+/.test(line)) {
+    flushParagraph();
+    listItems.push(line.replace(/^[-•]\s+/, ''));
+  } else {
+    flushList();
+    paragraphLines.push(line);
+  }
+}
+flushList();
+flushParagraph();
+---
+
+<div class="formatted-text">
+  {blocks.map((block) =>
+    block.type === 'list'
+      ? <ul>{block.items.map((item) => <li>{item}</li>)}</ul>
+      : <p>{block.text}</p>
+  )}
+</div>
+
+<style>
+  .formatted-text {
+    color: var(--color-copy);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .formatted-text p + p,
+  .formatted-text p + ul,
+  .formatted-text ul + p {
+    margin-top: 1rem;
+  }
+
+  .formatted-text ul {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .formatted-text li::marker {
+    color: var(--color-accent);
+  }
+</style>

@@ -1,0 +1,466 @@
+---
+import { getCollection } from 'astro:content';
+import logo from '../assets/site/logo-huca.svg';
+import Phone from 'remixicon/icons/Device/phone-fill.svg';
+import ChevronDown from 'remixicon/icons/Arrows/arrow-down-s-line.svg';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const pathname = Astro.url.pathname;
+const companyActive = pathname.startsWith('/empresa/') || pathname.startsWith('/por-que-elegirnos/');
+const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith('/service/');
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-brand" href="/" aria-label="HUCA Building Solutions — Inicio">
+      <img src={logo.src} alt="HUCA Building Solutions" width={128} height={113} loading="eager" />
+    </a>
+
+    <button
+      class="site-menu-toggle"
+      type="button"
+      aria-label="Abrir menú de navegación"
+      aria-controls="site-navigation"
+      aria-expanded="false"
+      data-menu-toggle
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="site-nav" id="site-navigation" aria-label="Navegación principal" data-site-nav>
+      <a class="site-nav__link" href="/" aria-current={pathname === '/' ? 'page' : undefined}>Inicio</a>
+
+      <details class:list={['site-nav__dropdown', companyActive && 'is-active']}>
+        <summary>Empresa <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" /></summary>
+        <div class="site-nav__submenu">
+          <a href="/empresa/">Quiénes somos</a>
+          <a href="/por-que-elegirnos/">Por qué elegir HUCA</a>
+        </div>
+      </details>
+
+      <details class:list={['site-nav__dropdown', servicesActive && 'is-active']}>
+        <summary>Servicios <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" /></summary>
+        <div class="site-nav__submenu">
+          <a href="/servicios/">Todos los servicios</a>
+          {services.map((service) => (
+            <a href={`/service/${service.data.slug}/`}>{service.data.title}</a>
+          ))}
+        </div>
+      </details>
+
+      <a
+        class="site-nav__link"
+        href="/proyectos/"
+        aria-current={pathname.startsWith('/proyectos/') ? 'page' : undefined}
+      >
+        Proyectos
+      </a>
+      <a
+        class="site-nav__link"
+        href="/contacto/"
+        aria-current={pathname.startsWith('/contacto/') ? 'page' : undefined}
+      >
+        Contacto
+      </a>
+    </nav>
+
+    <a class="site-header__phone" href="tel:+34671774262">
+      <span class="site-header__phone-icon" aria-hidden="true">
+        <Phone width={20} height={20} />
+      </span>
+      <span class="site-header__phone-copy">
+        <span>Contáctanos</span>
+        <strong>+34 671.774.262</strong>
+      </span>
+    </a>
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const header = button.closest('.site-header');
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!expanded));
+      button.setAttribute('aria-label', expanded ? 'Abrir menú de navegación' : 'Cerrar menú de navegación');
+      header?.classList.toggle('is-open', !expanded);
+    });
+  });
+
+  document.querySelectorAll('[data-site-nav] a').forEach((link) => {
+    link.addEventListener('click', () => {
+      const header = link.closest('.site-header');
+      const toggle = header?.querySelector('[data-menu-toggle]');
+      toggle?.setAttribute('aria-expanded', 'false');
+      header?.classList.remove('is-open');
+    });
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: 50;
+    top: 0;
+    background: var(--color-paper);
+    box-shadow: 0 2px 18px rgb(18 19 21 / 7%);
+  }
+
+  .site-header__inner {
+    display: flex;
+    min-height: 90px;
+    align-items: stretch;
+  }
+
+  .site-brand {
+    display: grid;
+    width: 90px;
+    flex: 0 0 90px;
+    place-items: center;
+    padding: 8px;
+    background: #1e2023;
+    aspect-ratio: 1 / 1;
+    align-self: stretch;
+    margin: 0;
+  }
+
+  .site-brand :global(img) {
+    width: 60px;
+    height: auto;
+  }
+
+  .site-nav {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 2.1vw, 34px);
+    padding: 0 28px;
+  }
+
+  .site-nav__link,
+  .site-nav__dropdown > summary {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 7px;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    transition: color 180ms ease;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link[aria-current='page'],
+  .site-nav__dropdown.is-active > summary,
+  .site-nav__dropdown > summary:hover {
+    color: var(--color-accent);
+  }
+
+  .site-nav__dropdown {
+    position: relative;
+  }
+
+  .site-nav__dropdown > summary {
+    list-style: none;
+  }
+
+  .site-nav__dropdown > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-nav__chevron {
+    color: var(--color-accent);
+    font-size: 16px;
+    line-height: 1;
+    transition: transform 180ms ease;
+  }
+
+  .site-nav__dropdown[open] .site-nav__chevron {
+    transform: rotate(180deg);
+  }
+
+  .site-nav__submenu {
+    position: absolute;
+    z-index: 55;
+    top: calc(100% - 4px);
+    left: -20px;
+    display: grid;
+    min-width: 240px;
+    padding: 10px 0;
+    background: var(--color-charcoal);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .site-nav__submenu a {
+    padding: 12px 20px;
+    color: #eee;
+    font-size: 15px;
+    line-height: 1.3;
+    transition: color 160ms ease, background-color 160ms ease;
+  }
+
+  .site-nav__submenu a:hover,
+  .site-nav__submenu a:focus-visible {
+    background: rgb(255 255 255 / 5%);
+    color: var(--color-accent);
+  }
+
+  .site-header__phone {
+    display: flex;
+    min-width: 248px;
+    align-items: center;
+    gap: 15px;
+    padding: 0 24px;
+    background: var(--color-charcoal);
+    color: var(--color-paper);
+  }
+
+  .site-header__phone-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    place-items: center;
+    background: var(--color-accent);
+  }
+
+  .site-header__phone-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .site-header__phone-copy {
+    display: grid;
+    gap: 3px;
+  }
+
+  .site-header__phone-copy span {
+    color: #c6c6c6;
+    font-size: 13px;
+  }
+
+  .site-header__phone-copy strong {
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .site-menu-toggle {
+    display: none;
+  }
+
+  @media (max-width: 1200px) {
+    .site-header__inner {
+      min-height: 90px;
+    }
+
+    .site-brand {
+      width: 90px;
+      flex-basis: 90px;
+      padding: 8px;
+    }
+
+    .site-brand :global(img) {
+      width: 60px;
+    }
+
+    .site-nav {
+      gap: 15px;
+      padding-inline: 18px;
+    }
+
+    .site-nav__link,
+    .site-nav__dropdown > summary {
+      font-size: 11px;
+      letter-spacing: 0.07em;
+    }
+
+    .site-header__phone {
+      min-width: 215px;
+      padding-inline: 16px;
+    }
+
+    .site-header__phone-icon {
+      width: 44px;
+      height: 44px;
+      flex-basis: 44px;
+    }
+
+    .site-header__phone-copy strong {
+      font-size: 16px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .site-header__inner {
+      position: relative;
+      height: 82px;
+      min-height: 82px;
+      align-items: center;
+      padding: 0;
+    }
+
+    .site-brand {
+      width: 82px;
+      height: 82px;
+      flex-basis: 82px;
+      padding: 8px;
+      background: #1e2023;
+      aspect-ratio: 1 / 1;
+    }
+
+    .site-brand :global(img) {
+      width: 54px;
+      height: auto;
+    }
+
+    .site-menu-toggle {
+      display: flex;
+      width: 82px;
+      height: 82px;
+      flex: 0 0 82px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      order: 3;
+      border: 0;
+      background: var(--color-accent);
+      cursor: pointer;
+    }
+
+    .site-menu-toggle span {
+      width: 25px;
+      height: 2px;
+      background: white;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    .site-header.is-open .site-menu-toggle span:first-child {
+      transform: translateY(8px) rotate(45deg);
+    }
+
+    .site-header.is-open .site-menu-toggle span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .site-header.is-open .site-menu-toggle span:last-child {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .site-nav {
+      position: absolute;
+      z-index: 60;
+      top: 100%;
+      right: 0;
+      left: 0;
+      display: none;
+      align-items: stretch;
+      gap: 0;
+      padding: 12px var(--page-gutter) 22px;
+      background: var(--color-charcoal);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .site-header.is-open .site-nav {
+      display: grid;
+    }
+
+    .site-nav__link,
+    .site-nav__dropdown > summary {
+      min-height: 48px;
+      justify-content: space-between;
+      border-bottom: 1px solid rgb(255 255 255 / 12%);
+      color: white;
+      font-size: 13px;
+    }
+
+    .site-nav__submenu {
+      position: static;
+      min-width: 0;
+      padding: 0 0 8px 15px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .site-nav__submenu a {
+      padding: 9px 12px;
+      border-left: 2px solid rgb(143 193 180 / 55%);
+    }
+
+    .site-header__phone {
+      min-width: 0;
+      flex: 1 1 auto;
+      justify-content: flex-end;
+      padding-inline: 18px;
+      background: var(--color-charcoal);
+      color: var(--color-paper);
+      min-height: 82px;
+    }
+
+    .site-header__phone-copy span {
+      color: var(--color-muted);
+    }
+
+    .site-header__phone-copy strong {
+      color: var(--color-paper);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .site-header__inner {
+      min-height: 62px;
+      height: 62px;
+    }
+
+    .site-brand {
+      width: 62px;
+      height: 62px;
+      flex-basis: 62px;
+      padding: 6px;
+      background: #1e2023;
+      aspect-ratio: 1 / 1;
+    }
+
+    .site-brand :global(img) {
+      width: 42px;
+    }
+
+    .site-menu-toggle {
+      width: 62px;
+      height: 62px;
+      flex-basis: 62px;
+    }
+
+    .site-header__phone {
+      gap: 8px;
+      padding: 10px 8px;
+      min-height: 62px;
+    }
+
+    .site-header__phone-icon {
+      width: 38px;
+      height: 38px;
+      flex-basis: 38px;
+    }
+
+    .site-header__phone-copy span {
+      font-size: 10px;
+    }
+
+    .site-header__phone-copy strong {
+      font-size: 12px;
+    }
+  }
+</style>

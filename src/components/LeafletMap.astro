@@ -1,0 +1,126 @@
+---
+import logo from '../assets/site/logo-huca.svg';
+
+interface Props {
+  lat?: number;
+  lng?: number;
+  zoom?: number;
+  tileStyle?: 'positron' | 'voyager' | 'dark';
+}
+
+const {
+  lat = 41.2804,
+  lng = 1.9767,
+  zoom = 15,
+  tileStyle = 'positron',
+} = Astro.props;
+
+const tileUrls = {
+  positron: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  voyager: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  dark: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+};
+
+const tileUrl = tileUrls[tileStyle];
+const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+---
+
+<div class="leaflet-map" data-lat={lat} data-lng={lng} data-zoom={zoom} data-tile-url={tileUrl} data-attribution={attribution} data-logo={logo.src}></div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<style>
+  .leaflet-map {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    z-index: 1;
+  }
+
+  .leaflet-map :global(.leaflet-container) {
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-body);
+  }
+
+  .leaflet-map :global(.leaflet-control-attribution) {
+    font-size: 10px;
+    background: rgb(255 255 255 / 70%);
+  }
+
+  .leaflet-map :global(.huca-marker) {
+    background: transparent;
+    border: none;
+  }
+
+  .leaflet-map :global(.huca-marker__pin) {
+    width: 44px;
+    height: 44px;
+    background: #8fc1b4;
+    border: 3px solid white;
+    border-radius: 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .leaflet-map :global(.huca-marker__pin::after) {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 12px solid white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .leaflet-map :global(.huca-marker__logo) {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+  }
+</style>
+
+<script>
+  import L from 'leaflet';
+
+  document.querySelectorAll('.leaflet-map').forEach((container) => {
+    const el = container as HTMLElement;
+    const lat = parseFloat(el.dataset.lat || '41.2803');
+    const lng = parseFloat(el.dataset.lng || '1.9774');
+    const zoom = parseInt(el.dataset.zoom || '15', 10);
+    const tileUrl = el.dataset.tileUrl || '';
+    const attribution = el.dataset.attribution || '';
+    const logoSrc = el.dataset.logo || '';
+
+
+    const map = L.map(el, {
+      center: [lat, lng],
+      zoom: zoom,
+      scrollWheelZoom: false,
+      zoomControl: true,
+    });
+
+    L.tileLayer(tileUrl, {
+      attribution: attribution,
+      subdomains: 'abcd',
+      maxZoom: 20,
+    }).addTo(map);
+
+    // Custom marker
+    const markerIcon = L.divIcon({
+      className: 'huca-marker',
+      html: `<div class="huca-marker__pin"><img class="huca-marker__logo" src="${logoSrc}" alt="" /></div>`,
+      iconSize: [44, 54],
+      iconAnchor: [22, 54],
+    });
+
+    L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+  });
+</script>

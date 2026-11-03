@@ -1,7 +1,7 @@
-﻿---
-title: Clever Investments
+---
+title: Clever investments
 logo: ../../assets/partners/clever-investments.png
-logoAlt: Logotipo de Clever Investments
+logoAlt: Clever investments
 order: 3
 featured: true
 ---

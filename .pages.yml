@@ -22,22 +22,22 @@ content:
     type: collection
     path: src/content/project-types
     format: yaml-frontmatter
-    filename: '{name}.md'
+    filename: '{primary}.md'
     operations:
       create: true
       rename: false
       delete: true
     view:
       fields:
-        - name
-      primary: name
+        - title
+      primary: title
       sort:
-        - name
+        - title
       default:
-        sort: name
+        sort: title
         order: asc
     fields:
-      - name: name
+      - name: title
         label: Tipo de proyecto
         type: string
         required: true
@@ -127,7 +127,7 @@ content:
         description: Selecciona un tipo existente o crea uno nuevo en la colección "Tipos de proyecto".
         options:
           collection: project-types
-          search: name
+          search: "title"
           value: "{primary}"
           label: "{primary}"
 

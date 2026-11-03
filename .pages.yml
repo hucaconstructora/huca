@@ -2,8 +2,8 @@
 # Image values are written relative to each Markdown file so Astro's
 # Content Collections image() helper can resolve them at build time.
 media:
-  input: src/assets/partners
-  output: ../../assets/partners
+  input: src/assets
+  output: ../../assets
   extensions:
     - jpg
     - jpeg

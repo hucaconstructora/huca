@@ -31,6 +31,23 @@ const description = `${data.tagline} ${data.description} ${data.details}`;
   description={description.slice(0, 160)}
   ogImage={data.cover}
   noindex={true}
+  breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Servicios', href: '/servicios/' }, { label: data.title }]}
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: data.title,
+    description: data.tagline,
+    provider: {
+      '@type': 'LocalBusiness',
+      name: 'HUCA Building Solutions S.L.',
+      url: 'https://hucaconstructora.com',
+    },
+    areaServed: {
+      '@type': 'City',
+      name: 'Barcelona',
+    },
+    serviceType: data.title,
+  }}
 >
   <PageHero
     eyebrow="Servicio HUCA"

@@ -50,7 +50,7 @@ const seoTitle = data.seoTitle ?? `${data.title} | ${companyProfile.name}`;
 const seoDescription = data.seoDescription ?? data.summary;
 ---
 
-<MainLayout title={seoTitle} description={seoDescription} ogType="article" ogImage={data.cover}>
+<MainLayout title={seoTitle} description={seoDescription} ogType="article" ogImage={data.cover} breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Proyectos', href: '/proyectos/' }, { label: data.title }]}>
   <PageHero
     eyebrow="Descubre el trabajo que hemos realizado"
     title={data.title}

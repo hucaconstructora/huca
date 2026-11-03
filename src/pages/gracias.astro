@@ -4,7 +4,7 @@ import PageHero from '../components/PageHero.astro';
 import heroContact from '../assets/site/hero-contacto.jpg';
 ---
 
-<MainLayout title="Mensaje recibido | HUCA" description="Hemos recibido tu mensaje y nos pondremos en contacto contigo." noindex={true}>
+<MainLayout title="Mensaje recibido | HUCA" description="Hemos recibido tu mensaje y nos pondremos en contacto contigo." noindex={true} breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Contacto', href: '/contacto/' }, { label: 'Mensaje recibido' }]}>
   <PageHero
     eyebrow="Mensaje recibido"
     title="Gracias por contactar con HUCA"

@@ -12,6 +12,8 @@ interface Props {
   noindex?: boolean;
   ogImage?: ImageMetadata | string;
   ogType?: 'website' | 'article';
+  breadcrumbs?: { label: string; href?: string }[];
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -20,6 +22,8 @@ const {
   noindex = false,
   ogImage,
   ogType = 'website',
+  breadcrumbs = [],
+  jsonLd,
 } = Astro.props;
 const origin = Astro.site?.origin ?? 'https://hucaconstructora.com';
 const canonical = new URL(Astro.url.pathname, origin).href;
@@ -72,6 +76,17 @@ const website = {
   publisher: { '@id': `${origin}/#organization` },
   inLanguage: 'es-ES',
 };
+
+const breadcrumbList = breadcrumbs.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((crumb, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: crumb.label,
+    ...(crumb.href ? { item: new URL(crumb.href, origin).href } : {}),
+  })),
+} : null;
 ---
 
 <!doctype html>
@@ -82,9 +97,12 @@ const website = {
     <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large'} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" type="image/svg+xml" href={iconUrl} />
     <meta name="theme-color" content="#1e2023" />
+    <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
     <title>{title}</title>
     <meta property="og:locale" content="es_ES" />
     <meta property="og:site_name" content="HUCA Building Solutions" />
@@ -98,7 +116,7 @@ const website = {
     {imageUrl && <meta property="og:image:height" content="630" />}
     {imageUrl && <meta property="og:image:alt" content={title} />}
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
-    <script type="application/ld+json" set:html={JSON.stringify([organization, website])}></script>
+    <script type="application/ld+json" set:html={JSON.stringify([organization, website, ...(breadcrumbList ? [breadcrumbList] : []), ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])])}></script>
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>

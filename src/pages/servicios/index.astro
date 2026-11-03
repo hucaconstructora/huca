@@ -13,6 +13,7 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
   title="Servicios de HUCA | Obra nueva, reformas y obra civil"
   description={aboutContent.introduction}
   ogImage={services[0]?.data.cover}
+  breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Servicios' }]}
 >
   {services[0] && (
     <PageHero

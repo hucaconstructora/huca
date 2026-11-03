@@ -322,11 +322,35 @@ import Send from 'remixicon/icons/Business/send-plane-line.svg';
   }
 
   .contact-form__consent input {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 18px;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
     margin: 2px 0 0;
-    accent-color: var(--color-accent);
+    border: 1px solid #dedede;
+    border-radius: 0;
+    background-color: white;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px 12px;
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .contact-form__consent input:checked {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E");
+  }
+
+  .contact-form__consent input:hover {
+    border-color: var(--color-accent);
+  }
+
+  .contact-form__consent input.has-error {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgb(229 62 62 / 14%);
   }
 
   .contact-form__consent label {

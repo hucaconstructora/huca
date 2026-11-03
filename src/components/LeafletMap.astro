@@ -1,5 +1,6 @@
 ---
 import logo from '@/assets/site/logo-huca.svg';
+import '@/styles/leaflet.css';
 
 interface Props {
   lat?: number;
@@ -26,8 +27,6 @@ const attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">Op
 ---
 
 <div class="leaflet-map" data-lat={lat} data-lng={lng} data-zoom={zoom} data-tile-url={tileUrl} data-attribution={attribution} data-logo={logo.src}></div>
-
-import '../styles/leaflet.css';
 
 <style>
   .leaflet-map {

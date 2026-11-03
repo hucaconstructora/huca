@@ -27,26 +27,32 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
       <span></span><span></span><span></span>
     </button>
 
+    <div class="site-nav-backdrop" data-menu-backdrop aria-hidden="true"></div>
+
     <nav class="site-nav" id="site-navigation" aria-label="Navegación principal" data-site-nav>
       <a class="site-nav__link" href="/" aria-current={pathname === '/' ? 'page' : undefined}>Inicio</a>
 
-      <details class:list={['site-nav__dropdown', companyActive && 'is-active']}>
-        <summary>Empresa <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" /></summary>
-        <div class="site-nav__submenu">
+      <div class:list={['site-nav__dropdown', companyActive && 'is-active']} data-dropdown>
+        <button type="button" class="site-nav__dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+          Empresa <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" />
+        </button>
+        <div class="site-nav__submenu" hidden>
           <a href="/empresa/">Quiénes somos</a>
           <a href="/por-que-elegirnos/">Por qué elegir HUCA</a>
         </div>
-      </details>
+      </div>
 
-      <details class:list={['site-nav__dropdown', servicesActive && 'is-active']}>
-        <summary>Servicios <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" /></summary>
-        <div class="site-nav__submenu">
+      <div class:list={['site-nav__dropdown', servicesActive && 'is-active']} data-dropdown>
+        <button type="button" class="site-nav__dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+          Servicios <ChevronDown width={14} height={14} class="site-nav__chevron" aria-hidden="true" />
+        </button>
+        <div class="site-nav__submenu" hidden>
           <a href="/servicios/">Todos los servicios</a>
           {services.map((service) => (
             <a href={`/service/${service.data.slug}/`}>{service.data.title}</a>
           ))}
         </div>
-      </details>
+      </div>
 
       <a
         class="site-nav__link"
@@ -61,6 +67,16 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
         aria-current={pathname.startsWith('/contacto/') ? 'page' : undefined}
       >
         Contacto
+      </a>
+
+      <a class="site-nav__phone" href="tel:+34671774262">
+        <span class="site-nav__phone-icon" aria-hidden="true">
+          <Phone width={20} height={20} />
+        </span>
+        <span class="site-nav__phone-copy">
+          <span>Contáctanos</span>
+          <strong>+34 671.774.262</strong>
+        </span>
       </a>
     </nav>
 
@@ -77,60 +93,111 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
 </header>
 
 <script>
-  const siteDropdowns = Array.from(document.querySelectorAll('.site-nav__dropdown'));
+  const siteDropdowns = Array.from(document.querySelectorAll('[data-dropdown]'));
+
+  const closeAllDropdowns = () => {
+    siteDropdowns.forEach((dropdown) => {
+      dropdown.classList.remove('is-open');
+      const toggle = dropdown.querySelector('.site-nav__dropdown-toggle');
+      const submenu = dropdown.querySelector('.site-nav__submenu') as HTMLElement | null;
+      toggle?.setAttribute('aria-expanded', 'false');
+      if (submenu) submenu.hidden = true;
+    });
+  };
 
   siteDropdowns.forEach((dropdown) => {
-    dropdown.addEventListener('toggle', () => {
-      if (dropdown.open) {
-        siteDropdowns.forEach((other) => {
-          if (other !== dropdown) other.open = false;
-        });
+    const toggle = dropdown.querySelector('.site-nav__dropdown-toggle');
+    const submenu = dropdown.querySelector('.site-nav__submenu') as HTMLElement | null;
+    if (!toggle || !submenu) return;
+
+    toggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const willOpen = !dropdown.classList.contains('is-open');
+      closeAllDropdowns();
+      if (willOpen) {
+        dropdown.classList.add('is-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        submenu.hidden = false;
       }
     });
   });
 
   document.addEventListener('click', (event) => {
     const target = event.target;
-    if (!(target instanceof Element) || !target.closest('.site-nav__dropdown')) {
-      siteDropdowns.forEach((dropdown) => {
-        dropdown.open = false;
-      });
+    if (!(target instanceof Element) || !target.closest('[data-dropdown]')) {
+      closeAllDropdowns();
     }
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      siteDropdowns.forEach((dropdown) => {
-        dropdown.open = false;
-      });
-    }
+    if (event.key === 'Escape') closeAllDropdowns();
   });
 
   document.querySelectorAll('.site-nav__submenu a').forEach((link) => {
     link.addEventListener('click', () => {
-      siteDropdowns.forEach((dropdown) => {
-        dropdown.open = false;
-      });
+      closeAllDropdowns();
     });
   });
+
+  const setMenuState = (header: Element | null, toggle: Element | null, open: boolean) => {
+    if (!header || !toggle) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
+    header.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (!open) closeAllDropdowns();
+  };
 
   document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
       const header = button.closest('.site-header');
-      const expanded = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!expanded));
-      button.setAttribute('aria-label', expanded ? 'Abrir menú de navegación' : 'Cerrar menú de navegación');
-      header?.classList.toggle('is-open', !expanded);
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      setMenuState(header, button, open);
+    });
+  });
+
+  document.querySelectorAll('[data-menu-backdrop]').forEach((backdrop) => {
+    backdrop.addEventListener('click', () => {
+      const header = backdrop.closest('.site-header');
+      const toggle = header?.querySelector('[data-menu-toggle]') ?? null;
+      setMenuState(header ?? null, toggle, false);
     });
   });
 
   document.querySelectorAll('[data-site-nav] a').forEach((link) => {
     link.addEventListener('click', () => {
       const header = link.closest('.site-header');
-      const toggle = header?.querySelector('[data-menu-toggle]');
-      toggle?.setAttribute('aria-expanded', 'false');
-      header?.classList.remove('is-open');
+      const toggle = header?.querySelector('[data-menu-toggle]') ?? null;
+      setMenuState(header ?? null, toggle, false);
     });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('.site-header.is-open').forEach((header) => {
+      const toggle = header.querySelector('[data-menu-toggle]');
+      setMenuState(header, toggle, false);
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    document.querySelectorAll('.site-header.is-open').forEach((header) => {
+      if (!target.closest('[data-site-nav]') && !target.closest('[data-menu-toggle]') && !target.closest('[data-menu-backdrop]')) {
+        const toggle = header.querySelector('[data-menu-toggle]');
+        setMenuState(header, toggle, false);
+      }
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1023) {
+      document.querySelectorAll('.site-header.is-open').forEach((header) => {
+        const toggle = header.querySelector('[data-menu-toggle]');
+        setMenuState(header, toggle, false);
+      });
+    }
   });
 </script>
 
@@ -177,7 +244,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
   }
 
   .site-nav__link,
-  .site-nav__dropdown > summary {
+  .site-nav__dropdown-toggle {
     display: inline-flex;
     height: 100%;
     min-height: 48px;
@@ -196,18 +263,18 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
   }
 
   .site-nav__link:hover,
-  .site-nav__dropdown > summary:hover {
+  .site-nav__dropdown-toggle:hover {
     color: var(--color-accent);
   }
 
   .site-nav__link[aria-current='page'],
-  .site-nav__dropdown.is-active > summary {
+  .site-nav__dropdown.is-active .site-nav__dropdown-toggle {
     color: var(--color-accent);
     position: relative;
   }
 
   .site-nav__link[aria-current='page']::after,
-  .site-nav__dropdown.is-active > summary::after {
+  .site-nav__dropdown.is-active .site-nav__dropdown-toggle::after {
     content: '';
     position: absolute;
     left: 0;
@@ -219,14 +286,8 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
 
   .site-nav__dropdown {
     position: relative;
-  }
-
-  .site-nav__dropdown > summary {
-    list-style: none;
-  }
-
-  .site-nav__dropdown > summary::-webkit-details-marker {
-    display: none;
+    height: auto;
+    overflow: visible;
   }
 
   .site-nav__chevron {
@@ -236,7 +297,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     transition: transform 180ms ease;
   }
 
-  .site-nav__dropdown[open] .site-nav__chevron {
+  .site-nav__dropdown.is-open .site-nav__chevron {
     transform: rotate(180deg);
   }
 
@@ -245,14 +306,19 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     z-index: 55;
     top: calc(100% - 4px);
     left: -20px;
-    display: grid;
+    display: none;
     min-width: 240px;
     padding: 10px 0;
     background: var(--color-charcoal);
     box-shadow: var(--shadow-soft);
   }
 
+  .site-nav__dropdown.is-open .site-nav__submenu {
+    display: grid;
+  }
+
   .site-nav__submenu a {
+    display: block;
     padding: 12px 20px;
     color: #eee;
     font-size: 15px;
@@ -313,6 +379,14 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     display: none;
   }
 
+  .site-nav-backdrop {
+    display: none;
+  }
+
+  .site-nav__phone {
+    display: none;
+  }
+
   @media (max-width: 1200px) {
     .site-header__inner {
       min-height: 90px;
@@ -334,7 +408,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     }
 
     .site-nav__link,
-    .site-nav__dropdown > summary {
+    .site-nav__dropdown-toggle {
       font-size: 11px;
       letter-spacing: 0.07em;
     }
@@ -412,44 +486,177 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
       transform: translateY(-8px) rotate(-45deg);
     }
 
+    .site-header__phone {
+      display: none;
+    }
+
+    .site-menu-toggle {
+      margin-left: auto;
+    }
+
+    .site-nav-backdrop {
+      position: fixed;
+      top: 82px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: rgb(18 19 21 / 55%);
+      backdrop-filter: blur(2px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 220ms ease, visibility 220ms ease;
+      z-index: 59;
+    }
+
+    .site-header.is-open .site-nav-backdrop {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
     .site-nav {
-      position: absolute;
+      position: fixed;
       z-index: 60;
-      top: 100%;
+      top: 82px;
       right: 0;
       left: 0;
-      display: none;
-      align-items: stretch;
+      width: 100%;
+      max-height: calc(100vh - 82px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 0;
-      padding: 12px var(--page-gutter) 22px;
+      padding: 8px 0 24px;
       background: var(--color-charcoal);
-      box-shadow: var(--shadow-soft);
+      box-shadow: 0 18px 40px rgb(18 19 21 / 35%);
+      transform: translateY(-12px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform 240ms ease, opacity 240ms ease, visibility 240ms ease;
     }
 
     .site-header.is-open .site-nav {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .site-nav__phone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px var(--page-gutter) 0;
+      padding: 14px 16px;
+      background: var(--color-accent);
+      color: var(--color-paper);
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .site-nav__phone-icon {
       display: grid;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      place-items: center;
+      background: var(--color-charcoal);
+      color: var(--color-paper);
+    }
+
+    .site-nav__phone-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .site-nav__phone-copy {
+      display: grid;
+      gap: 2px;
+      line-height: 1.1;
+    }
+
+    .site-nav__phone-copy span {
+      font-size: 10px;
+      color: rgb(255 255 255 / 75%);
+      letter-spacing: 0.1em;
+    }
+
+    .site-nav__phone-copy strong {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-paper);
+      white-space: nowrap;
     }
 
     .site-nav__link,
-    .site-nav__dropdown > summary {
-      min-height: 48px;
+    .site-nav__dropdown-toggle {
+      height: auto;
+      min-height: 52px;
       justify-content: space-between;
-      border-bottom: 1px solid rgb(255 255 255 / 12%);
+      padding-inline: var(--page-gutter);
+      border-bottom: 1px solid rgb(255 255 255 / 10%);
       color: white;
       font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      width: 100%;
+      text-align: left;
+      transition: background-color 160ms ease, color 160ms ease;
+    }
+
+    .site-nav__link:hover,
+    .site-nav__dropdown-toggle:hover {
+      background: rgb(255 255 255 / 4%);
+      color: var(--color-accent);
+    }
+
+    .site-nav__link[aria-current='page'],
+    .site-nav__dropdown.is-active .site-nav__dropdown-toggle {
+      color: var(--color-accent);
+    }
+
+    .site-nav__dropdown {
+      width: 100%;
     }
 
     .site-nav__submenu {
       position: static;
+      width: 100%;
       min-width: 0;
-      padding: 0 0 8px 15px;
-      background: transparent;
+      padding: 4px var(--page-gutter) 8px var(--page-gutter);
+      background: rgb(255 255 255 / 6%);
       box-shadow: none;
+      display: none;
+      overflow: hidden;
+    }
+
+    .site-nav__dropdown.is-open .site-nav__submenu {
+      display: grid;
     }
 
     .site-nav__submenu a {
-      padding: 9px 12px;
-      border-left: 2px solid rgb(143 193 180 / 55%);
+      display: block;
+      padding: 10px 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgb(255 255 255 / 75%);
+      transition: color 160ms ease, background-color 160ms ease;
+    }
+
+    .site-nav__submenu a:hover,
+    .site-nav__submenu a:focus-visible {
+      color: var(--color-accent);
+      background: rgb(255 255 255 / 4%);
     }
 
     .site-header__phone {
@@ -475,6 +682,15 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     .site-header__inner {
       min-height: 62px;
       height: 62px;
+    }
+
+    .site-nav-backdrop,
+    .site-nav {
+      top: 62px;
+    }
+
+    .site-nav {
+      max-height: calc(100vh - 62px);
     }
 
     .site-brand {

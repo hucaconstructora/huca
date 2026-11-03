@@ -1,10 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
-import MainLayout from '../../layouts/MainLayout.astro';
-import PageHero from '../../components/PageHero.astro';
-import SectionHeading from '../../components/SectionHeading.astro';
-import ServiceCard from '../../components/ServiceCard.astro';
-import { aboutContent } from '../../data/company';
+import MainLayout from '@/layouts/MainLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import { aboutContent } from '@/data/company';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 ---

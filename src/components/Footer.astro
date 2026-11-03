@@ -1,12 +1,12 @@
 ---
-import logo from '../assets/site/logo-huca.svg';
-import footerPattern from '../assets/site/footer-pattern-4.svg';
+import logo from '@/assets/site/logo-huca.svg';
+import footerPattern from '@/assets/site/footer-pattern-4.svg';
 import Phone from 'remixicon/icons/Device/phone-line.svg';
 import Mail from 'remixicon/icons/Business/mail-line.svg';
 import MapPin from 'remixicon/icons/Map/map-pin-2-line.svg';
 import Clock from 'remixicon/icons/System/time-line.svg';
 import ChevronRight from 'remixicon/icons/Arrows/arrow-right-s-line.svg';
-import { companyProfile } from '../data/company';
+import { companyProfile } from '@/data/company';
 import { getCollection } from 'astro:content';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);

@@ -1,14 +1,14 @@
 ---
 import { getCollection } from 'astro:content';
-import MainLayout from '../layouts/MainLayout.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
 import ArrowRightUp from 'remixicon/icons/Arrows/arrow-right-up-line.svg';
-import PageHero from '../components/PageHero.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import ContentPlaceholder from '../components/ContentPlaceholder.astro';
-import { aboutContent, companyValues } from '../data/company';
-import heroProjects from '../assets/site/hero-proyectos.jpg';
+import PageHero from '@/components/PageHero.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import ContentPlaceholder from '@/components/ContentPlaceholder.astro';
+import { aboutContent, companyValues } from '@/data/company';
+import heroProjects from '@/assets/site/hero-proyectos.jpg';
 
 const allProjects = (await getCollection('projects', ({ data }) => data.status === 'published'))
   .sort((a, b) => a.data.order - b.data.order);

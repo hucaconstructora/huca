@@ -1,9 +1,9 @@
 ---
 import type { ImageMetadata } from 'astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { companyProfile } from '../data/company';
-import icon from '../assets/site/logo-huca.svg';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { companyProfile } from '@/data/company';
+import icon from '@/assets/site/logo-huca.svg';
 import '../styles/global.css';
 
 interface Props {
@@ -117,6 +117,9 @@ const breadcrumbList = breadcrumbs.length > 0 ? {
     {imageUrl && <meta property="og:image:alt" content={title} />}
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     <script type="application/ld+json" set:html={JSON.stringify([organization, website, ...(breadcrumbList ? [breadcrumbList] : []), ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])])}></script>
+    {import.meta.env.PROD && (
+      <script defer src="/umami.js" data-website-id="d8088b24-afd1-4ce1-9eb5-ad1d14838fc8" data-host-url="https://umami.qu4k3.com"></script>
+    )}
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>

@@ -285,8 +285,6 @@ content:
     view:
       fields:
         - title
-        - order
-        - featured
       primary: title
       sort:
         - order

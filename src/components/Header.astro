@@ -77,6 +77,43 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
 </header>
 
 <script>
+  const siteDropdowns = Array.from(document.querySelectorAll('.site-nav__dropdown'));
+
+  siteDropdowns.forEach((dropdown) => {
+    dropdown.addEventListener('toggle', () => {
+      if (dropdown.open) {
+        siteDropdowns.forEach((other) => {
+          if (other !== dropdown) other.open = false;
+        });
+      }
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element) || !target.closest('.site-nav__dropdown')) {
+      siteDropdowns.forEach((dropdown) => {
+        dropdown.open = false;
+      });
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      siteDropdowns.forEach((dropdown) => {
+        dropdown.open = false;
+      });
+    }
+  });
+
+  document.querySelectorAll('.site-nav__submenu a').forEach((link) => {
+    link.addEventListener('click', () => {
+      siteDropdowns.forEach((dropdown) => {
+        dropdown.open = false;
+      });
+    });
+  });
+
   document.querySelectorAll('[data-menu-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
       const header = button.closest('.site-header');
@@ -133,7 +170,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     display: flex;
     min-width: 0;
     flex: 1 1 auto;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: clamp(14px, 2.1vw, 34px);
     padding: 0 28px;
@@ -142,6 +179,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
   .site-nav__link,
   .site-nav__dropdown > summary {
     display: inline-flex;
+    height: 100%;
     min-height: 48px;
     align-items: center;
     gap: 7px;
@@ -158,10 +196,25 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
   }
 
   .site-nav__link:hover,
-  .site-nav__link[aria-current='page'],
-  .site-nav__dropdown.is-active > summary,
   .site-nav__dropdown > summary:hover {
     color: var(--color-accent);
+  }
+
+  .site-nav__link[aria-current='page'],
+  .site-nav__dropdown.is-active > summary {
+    color: var(--color-accent);
+    position: relative;
+  }
+
+  .site-nav__link[aria-current='page']::after,
+  .site-nav__dropdown.is-active > summary::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: var(--color-accent);
   }
 
   .site-nav__dropdown {

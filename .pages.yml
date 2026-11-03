@@ -2,8 +2,8 @@
 # Image values are written relative to each Markdown file so Astro's
 # Content Collections image() helper can resolve them at build time.
 media:
-  input: src/assets/projects
-  output: ../../assets/projects
+  input: src/assets/partners
+  output: ../../assets/partners
   extensions:
     - jpg
     - jpeg
@@ -271,3 +271,57 @@ content:
         description: Descripción para buscadores (máx. 160 caracteres).
         options:
           maxlength: 160
+
+  - name: partners
+    label: Empresas colaboradoras
+    type: collection
+    path: src/content/partners
+    format: yaml-frontmatter
+    filename: '{name}.md'
+    operations:
+      create: true
+      rename: false
+      delete: true
+    view:
+      fields:
+        - name
+        - order
+        - featured
+      primary: name
+      sort:
+        - order
+      default:
+        sort: order
+        order: asc
+    fields:
+      - name: name
+        label: Nombre de la empresa
+        type: string
+        required: true
+        options:
+          maxlength: 120
+
+      - name: logo
+        label: Logotipo
+        type: image
+        required: true
+        description: Sube el logotipo de la empresa. Se guardará en la carpeta de imágenes.
+
+      - name: logoAlt
+        label: Texto alternativo del logotipo
+        type: string
+        required: true
+        options:
+          maxlength: 180
+
+      - name: order
+        label: Orden de aparición
+        type: number
+        default: 0
+        options:
+          min: 0
+
+      - name: featured
+        label: Mostrar en la web
+        type: boolean
+        default: true

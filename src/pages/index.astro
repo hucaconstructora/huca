@@ -15,6 +15,8 @@ const allProjects = (await getCollection('projects', ({ data }) => data.status =
 const featured = allProjects.filter((project) => project.data.featured);
 const homeProjects = (featured.length ? featured : allProjects).slice(0, 2);
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const partners = (await getCollection('partners', ({ data }) => data.featured !== false))
+  .sort((a, b) => a.data.order - b.data.order);
 const projectIntro = 'Nuestro diverso portafolio representa una pasión por la calidad, un servicio excepcional al cliente y un compromiso constante de acompañamiento en cada proyecto.';
 ---
 
@@ -90,6 +92,26 @@ const projectIntro = 'Nuestro diverso portafolio representa una pasión por la c
       </div>
       <div class="home-services__more">
         <a class="button button--outline" href="/servicios/">Ver todos los servicios <span class="button__arrow" aria-hidden="true"><ArrowRightUp width={20} height={20} /></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-partners section-pad">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Confianza"
+        title="Empresas colaboradoras"
+        description="Proyectos desarrollados junto a empresas que confían en HUCA."
+        align="center"
+      />
+      <div class="home-partners__grid">
+        {partners.length > 0 ? partners.map((partner) => (
+          <div class="home-partner" aria-label={partner.data.name}>
+            <img src={partner.data.logo.src} alt={partner.data.logoAlt} loading="lazy" width={partner.data.logo.width} height={partner.data.logo.height} />
+          </div>
+        )) : (
+          <ContentPlaceholder title="Empresas colaboradoras" description="Añade los logotipos desde Pages CMS para mostrarlos aquí." />
+        )}
       </div>
     </div>
   </section>
@@ -247,6 +269,48 @@ const projectIntro = 'Nuestro diverso portafolio representa una pasión por la c
     display: flex;
     justify-content: center;
     margin-top: 38px;
+  }
+
+  .home-partners {
+    background: var(--color-paper);
+  }
+
+  .home-partners__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+    align-items: center;
+    margin-top: 48px;
+  }
+
+  .home-partner {
+    display: grid;
+    place-items: center;
+    min-height: 96px;
+    padding: 18px 20px;
+    border: 1px solid var(--color-line);
+    background: white;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .home-partner:hover {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-2px);
+  }
+
+  .home-partner img {
+    max-width: 100%;
+    max-height: 56px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(1) opacity(0.72);
+    transition: filter 180ms ease;
+  }
+
+  .home-partner:hover img {
+    filter: grayscale(0) opacity(1);
   }
 
   .home-projects {

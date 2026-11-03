@@ -82,7 +82,7 @@ const partners = defineCollection({
   }),
   schema: ({ image }) =>
     z.object({
-      name: z.string().trim().min(1).max(120),
+      title: z.string().trim().min(1).max(120),
       logo: image(),
       logoAlt: z.string().trim().min(1).max(180),
       order: z.coerce.number().int().default(0),

@@ -277,24 +277,24 @@ content:
     type: collection
     path: src/content/partners
     format: yaml-frontmatter
-    filename: '{name}.md'
+    filename: '{title}.md'
     operations:
       create: true
       rename: false
       delete: true
     view:
       fields:
-        - name
+        - title
         - order
         - featured
-      primary: name
+      primary: title
       sort:
         - order
       default:
         sort: order
         order: asc
     fields:
-      - name: name
+      - name: title
         label: Nombre de la empresa
         type: string
         required: true

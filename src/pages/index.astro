@@ -106,7 +106,7 @@ const projectIntro = 'Nuestro diverso portafolio representa una pasión por la c
       />
       <div class="home-partners__grid">
         {partners.length > 0 ? partners.map((partner) => (
-          <div class="home-partner" aria-label={partner.data.name}>
+          <div class="home-partner" aria-label={partner.data.title}>
             <img src={partner.data.logo.src} alt={partner.data.logoAlt} loading="lazy" width={partner.data.logo.width} height={partner.data.logo.height} />
           </div>
         )) : (

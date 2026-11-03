@@ -1,5 +1,5 @@
 ﻿---
-name: Domo Habit
+title: Domo Habit
 logo: ../../assets/partners/domo-habit.png
 logoAlt: Logotipo de Domo Habit
 order: 4

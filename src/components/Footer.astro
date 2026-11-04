@@ -23,8 +23,8 @@ const currentYear = new Date().getFullYear();
         <p>Construcción, obra civil y reformas integrales en Barcelona.</p>
       </div>
 
-      <div class="footer-links" aria-label="Contenido del sitio">
-        <h2>Contenido</h2>
+      <div class="footer-links" aria-label="Enlaces del sitio">
+        <h2>Explora</h2>
         <div class="footer-links__grid">
           <nav class="footer-links__column">
             <a class="footer-links__item" href="/empresa/"><ChevronRight width={12} height={12} aria-hidden="true" /> Quiénes somos</a>
@@ -169,12 +169,13 @@ const currentYear = new Date().getFullYear();
 
   .footer-contact__item {
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
   }
 
   .footer-contact__item :global(svg) {
     flex: 0 0 16px;
+    margin-top: 5px;
     color: var(--color-accent);
   }
 
@@ -198,9 +199,14 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-links__sub {
+    align-items: flex-start;
     padding-left: 12px;
     color: #a9a9a9 !important;
     font-size: 13px;
+  }
+
+  .footer-links__sub :global(svg) {
+    margin-top: 5px;
   }
 
   .footer-contact p {

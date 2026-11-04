@@ -429,13 +429,14 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     }
   }
 
-  @media (max-width: 1023px) {
+  @media (width <= 1023px) {
     .site-header__inner {
       position: relative;
       height: 82px;
       min-height: 82px;
       align-items: center;
       padding: 0;
+      background: #1e2023;
     }
 
     .site-brand {
@@ -678,7 +679,7 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
     }
   }
 
-  @media (max-width: 560px) {
+  @media (width <= 560px) {
     .site-header__inner {
       min-height: 62px;
       height: 62px;
@@ -697,13 +698,12 @@ const servicesActive = pathname.startsWith('/servicios/') || pathname.startsWith
       width: 62px;
       height: 62px;
       flex-basis: 62px;
-      padding: 6px;
       background: #1e2023;
       aspect-ratio: 1 / 1;
     }
 
     .site-brand :global(img) {
-      width: 42px;
+      width: 46px;
     }
 
     .site-menu-toggle {
